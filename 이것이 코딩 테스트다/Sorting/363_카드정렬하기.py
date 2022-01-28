@@ -17,5 +17,4 @@ while len(heap) != 1:
     ans += sum_value
     heapq.heappush(heap, sum_value)
 
-
 print(ans)
