@@ -10,7 +10,6 @@ def bfs():
         x = q.popleft()
         if x == k: # 같은 위치에 있는 경우
             return state[x]
-
         #BFS
         for nx in [x-1,x+1,x*2]: 
             if 0 <= nx <= MAX and not state[nx]:
@@ -20,8 +19,9 @@ def bfs():
 
 n,k = map(int,input().split())
 MAX = 100001
-n,k = 5 ,17
-state = [0] * MAX     
+# n,k = 5 ,17
+state = [0] * MAX  
+print(bfs())
 
 
 
