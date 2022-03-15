@@ -1,49 +1,39 @@
-n,m,v = list(map(int,input().split()))
-node = [list(map(int,input().split())) for _ in range(m)]
-ans_len = []
-for i in node:
-    for j in i:
-        ans_len.append(j)
-ans_len = len(set(ans_len))
-dfs_ans = [v]
-bfs_ans = [v]
+def dfs(n):
+    print(n, end=' ') # 지나온(방문한) 순서대로 기록
+    visited[n] = True # 방문한 곳을 체크 
+    for i in graph[n]: 
+        if not visited[i]: # 이어져있으나 지금껏 방문하지 않은 곳
+            dfs(i)  
 
-def dfs(num):
-    stack = []
-    if len(dfs_ans) == ans_len:
-        return
-
-    for n in node: 
-        if num in n:
-            for number in n:
-                if number not in dfs_ans:
-                    stack.append(number)
-
-    stack.sort()
-    dfs_ans.append(stack[0])
-    dfs(stack[0])
+def bfs(n):
+    visited[n]= True
+    queue = deque([n])
+    while queue: 
+        num = queue.popleft() 
+        print(num, end=' ') 
+        for i in graph[num]:
+            if not visited[i]:
+                visited[i] = True
+                queue.append(i)
+                
 
 
-def bfs(num):
-    queue = []
-    while len(bfs_ans) != ans_len:
-        for n in node: 
-            if num in n:
-                for number in n:
-                    if number not in bfs_ans:
-                        queue.append(number)
-    
-        queue.sort()
-        for q in queue:
-            if q not in bfs_ans:
-                bfs_ans.append(q)
-        
-        num = queue.pop(0)
+from collections import deque
+n,m,v = list(map(int,input().split())) # n: 정점의 개수, m: 간선의 개수, v: 탐색을 시작하는 번호 
+graph = [[] for _ in range(n+1)]
+visited = [False] * (n+1)
 
+for _ in range(m):
+    a,b = map(int, input().split())
+    graph[a].append(b)
+    graph[b].append(a)
 
+# 갈 수 있는 경로 정렬 -> 낮은 번호를 우선적으로 감 
+for i in range(1,n+1):
+    graph[i].sort()
 
 dfs(v)
+print()
+visited = [False] * (n+1) # 초기화
 bfs(v)
-print(' '.join(list(map(str,dfs_ans))))
-print(' '.join(list(map(str,bfs_ans))))
 
