@@ -1,3 +1,4 @@
+# 틀린 코드 : dfs 로 풀이시도 
 # def dfs(x,y,c):
 #     cnt = c+1
 #     if count[x][y] == 0 or count[x][y] > cnt:
