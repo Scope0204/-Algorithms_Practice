@@ -7,58 +7,50 @@
 최소 몇번의 명령이 필요할까
 
 # 로봇 제어 명령어 
-1. go k: 현재 향하고 있는 방향으로 k칸 만큼 움직임 
+1. go k: 현재 향하고 있는 방향으로 k칸 만큼 움직임 (최소 1 ~ 최대 3)
 2. trun dir: dir는 왼쪽또는 오른쪽이며, 90도로 회전한다
 '''
 from collections import deque
 
+#방향 : idx 0,1,2,3: 동,서,남,북
+dx = [0,0,1,-1]
+dy = [1,-1,0,0]
+
 # 로직
-def bfs(m,n,k):
-    global M,N
+def bfs():
+    q = deque([(sm-1,sn-1,sd-1,0)]) 
+    visited = [[[0]*4 for _ in range(N)] for _ in range(M)] # 동서남북에따라 방문기록을 남김
+    visited[sm-1][sn-1][sd-1] = 1 # 시작 위치 
 
-    q = deque([(m,n,k)])
+    while q: 
+        # print(q)
+        x,y,d,count = q.popleft()
+        if (x,y,d) == (em-1,en-1,ed-1): # 마지막 조건과 위치와 이동방향이 같은 경우
+            return count
 
-    while q:
-        x,y,k = q.popleft()
-
-        for nk in range(1,5):
-            nx,ny = x+dir[nk][0] , y+dir[nk][1]
-        
-            if 0<=nx<M and 0<=ny<N and not visited[nx][ny] and graph[nx][ny] == 0 :
-                if nk == k:
-                    if visited[x][y] == 0: #처음부터 방향이 맞을 때
-                        visited[x][y] = 1
-                    visited[nx][ny] = visited[x][y]
-                else: 
-                    if (k == 1 and nk == 2) or (k == 2 and nk == 1) or (k == 3 and nk == 4) or (k == 4 and nk == 3):
-                        visited[nx][ny] = visited[x][y]+3
-                    else:
-                        visited[nx][ny] = visited[x][y]+2
+        #1. go k 1~3 
+        for k in range(1,4):
+            nx,ny,nd = x+dx[d]*k,y+dy[d]*k,d # 방향은 그대로
+            if 0<=nx<M and 0<=ny<N and graph[nx][ny] == 0:
+                if not visited[nx][ny][nd]:
+                    visited[nx][ny][nd] = 1
+                    q.append((nx,ny,nd,count+1))
+            else: # 벽 밖으로 나가거나 1을 만나면 stop
+                break
+            
                 
-                q.append((nx,ny,nk))
-
-                if nx == em-1 and ny == en-1 :
-                    return nk
-
-
-
+        #2. turn dir 90도로 방향 바꾸기. 180도 회전시 2회 소모 
+        for nd in range(4):
+            if nd != d and not visited[x][y][nd]:
+                visited[x][y][nd] = 1
+                if (d == 0 and nd == 1) or (d == 1 and nd == 0) or (d == 2 and nd == 3) or (d == 3 and nd == 2):
+                    q.append((x,y,nd,count+2))
+                else:
+                    q.append((x,y,nd,count+1))
 # 입력
 M,N = map(int,input().split()) # 세로, 가로
 graph = [ list(map(int,input().split())) for _ in range(M)]
-m,n,k = map(int,input().split()) #출발지점 x y, 바라보는 방향 k 
-em,en,ek = map(int,input().split()) # 도착지점 x y, 바라보는 방향
+sm,sn,sd = map(int,input().split()) #출발지점 x y, 바라보는 방향 d
+em,en,ed = map(int,input().split()) # 도착지점 x y, 바라보는 방향
 
-# 풀이
-dir=[(0,0),(0,1),(0,-1),(1,0),(-1,0)] #방향 : 1,2,3,4 : 동,서,남,북 : 오 왼 아 위
-visited = [[0]*N for _ in range(M)]
-
-# 출력 : 최소 명령 횟수
-lk = bfs(m-1,n-1,k)
-if ek == lk: # 마지막 바라보는 곳과 같다면
-    print(visited[em-1][en-1])
-else:
-    if (ek == 1 and lk == 2) or (ek == 2 and lk == 1) or (ek == 3 and lk == 4) or (ek == 4 and lk == 3):
-        print(visited[em-1][en-1]+2)
-    else:
-        print(visited[em-1][en-1]+1)
-
+print(bfs())
